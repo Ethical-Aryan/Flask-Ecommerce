@@ -1,0 +1,116 @@
+#DAY TO DAY COMMANDS
+git pull origin main
+git status
+git add .
+git commit -m "Describe what you changed"
+git push origin main
+
+
+# ==========================
+# GIT DAILY CHEAT SHEET
+# ==========================
+
+# Check project status
+git status
+
+# Download latest changes
+git pull origin main
+
+# Add all changes
+git add .
+
+# Commit changes
+git commit -m "Describe your changes"
+
+# Upload to GitHub
+git push origin main
+
+
+# ==========================
+# FIRST TIME SETUP
+# ==========================
+
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+git push -u origin main
+
+
+# ==========================
+# BRANCHES
+# ==========================
+
+# Show current branch
+git branch
+
+# Create & switch to new branch
+git checkout -b branch-name
+
+# Switch branch
+git checkout branch-name
+
+
+# ==========================
+# HISTORY
+# ==========================
+
+# Short commit history
+git log --oneline
+
+# Detailed history
+git log
+
+
+# ==========================
+# REMOTE
+# ==========================
+
+# Show remote
+git remote -v
+
+# Change remote URL
+git remote set-url origin https://github.com/USERNAME/REPOSITORY.git
+
+
+# ==========================
+# UNDO
+# ==========================
+
+# Restore changes in a file
+git restore filename.py
+
+# Restore all files
+git restore .
+
+# Unstage files
+git restore --staged .
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit (delete changes)
+git reset --hard HEAD~1
+
+
+# ==========================
+# STASH
+# ==========================
+
+git stash
+git stash pop
+
+
+# ==========================
+# CLONE
+# ==========================
+
+git clone https://github.com/USERNAME/REPOSITORY.git
+
+
+# ==========================
+# FORCE PUSH (Use Carefully)
+# ==========================
+
+git push --force

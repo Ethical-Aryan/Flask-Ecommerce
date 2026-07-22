@@ -40,5 +40,6 @@ def logout():
     session.pop('username', None)
     return redirect('/adminlogin')
 
+
 if __name__ == '__main__':
     app.run(debug=True)
