@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+    <form action="/adminlogin" method="POST" class="p-4 border rounded" style="width: 320px;">
+        <h4 class="text-center mb-3">Admin Login</h4>
+        
+        {% if error %}
+            <div class="alert alert-danger py-1 text-center small mb-3">{{ error }}</div>
+        {% endif %}
+
+        <input type="text" name="username" class="form-control mb-3" placeholder="Username" required>
+        <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+</body>
+</html>
