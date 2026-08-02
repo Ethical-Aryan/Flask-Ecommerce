@@ -1,10 +1,11 @@
-from flask import Flask, request,render_template
+from flask import Flask, request,render_template , redirect,url_for
 
 app = Flask(__name__)
 
-@app.route("/",methods=['GET'])
+@app.route("/",methods=['GET','POST'])
 def home():
-    return render_template("index.html")
+    name = request.form.get("username")
+    return render_template("index.html", username=name)
 
 @app.route("/about",methods=['GET']) #Query parameter
 def about():
@@ -17,18 +18,32 @@ def about():
 def services(name,age):
     return render_template("services.html",name=name,age=age)
 
+@app.get("/dashboard")
+def dashboard():
+    message = request.args.get('message')
+    username = request.args.get('username')
+    return render_template("dashboard.html", message=message, username=username)
+
+@app.route("/register" , methods=['GET','POST'])
+def register():
+    if request == "POST":
+        name = request.form.get('name')
+        username= request.form.get('email')
+        password = request.form.get('password')
+        cpassword = request.form.get('cpassword')
+        return render_template("login.html" , message="Registeration sucessfull")
+
+
 @app.route("/login" , methods=['GET','POST'])
 def login():
     if request.method == "POST":
+        name = request.form.get('username')
         username = request.form.get('email')
         password = request.form.get('password')
-        if username == "admin" and password == "admin@123":
-            return render_template('dashboard.html',message="Sucess")
-        else:
-            return render_template('login.html',message="UnSucess")
-
+        return render_template("index.html" , message="Login Successfull")
     else:
         return render_template('login.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
