@@ -4,8 +4,10 @@ app = Flask(__name__)
 
 @app.route("/",methods=['GET','POST'])
 def home():
-    name = request.form.get("username")
-    return render_template("index.html", username=name)
+    if request.method == "POST":    
+        name = request.form.get("username")
+        return render_template("index.html", username=name)
+    return render_template("index.html", username=" ")
 
 @app.route("/about",methods=['GET']) #Query parameter
 def about():
@@ -31,7 +33,9 @@ def register():
         username= request.form.get('email')
         password = request.form.get('password')
         cpassword = request.form.get('cpassword')
-        return render_template("login.html" , message="Registeration sucessfull")
+        return render_template("login.html" , mess="Registeration sucessfull")
+    else:
+        return render_template("register.html",mess="Registeration Unsuccessfull")
 
 
 @app.route("/login" , methods=['GET','POST'])
@@ -40,7 +44,7 @@ def login():
         name = request.form.get('username')
         username = request.form.get('email')
         password = request.form.get('password')
-        return render_template("index.html" , message="Login Successfull")
+        return render_template("index.html" , message="Login Successfull" , mess="Registeration successfull now login")
     else:
         return render_template('login.html')
 
