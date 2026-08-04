@@ -45,7 +45,7 @@ def admin_login():
         # Step 1: MySQL connect karo
         conn = get_db_connection()
         if not conn:
-            return render_template('admin_login.html', error='Database Connection Failed! Start XAMPP MySQL.')
+            return render_template('admin_login.html', error='Database Connection Failed!')
 
         # Step 2: Cursor open karo
         cursor = conn.cursor()
@@ -76,7 +76,7 @@ def dashboard():
     # Session check (logged in user only)
     if 'username' in session:
         return render_template('dashboard.html', admin=session['username'])
-    return redirect(url_for('admin_login'))
+return redirect(url_for('admin_login'))
 
 
 @app.route('/logout')
