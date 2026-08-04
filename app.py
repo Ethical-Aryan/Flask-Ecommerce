@@ -76,7 +76,7 @@ def dashboard():
     # Session check (logged in user only)
     if 'username' in session:
         return render_template('dashboard.html', admin=session['username'])
-return redirect(url_for('admin_login'))
+        return redirect(url_for('admin_login'))
 
 
 @app.route('/logout')
