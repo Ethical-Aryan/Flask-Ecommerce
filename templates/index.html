@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>E-Commerce Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 </head>
-<body>
-        <h1>Home Page </h1>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <a class="navbar-brand fw-bold" href="/">🛒 E-Commerce Store</a>
+        <div class="ms-auto">
+            <a href="{{ url_for('admin_login') }}" class="btn btn-outline-light btn-sm">Admin Login</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Welcome to E-Commerce Store</h2>
+
+        {% if products %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product[1] }}</h5>
+                            <p class="card-text text-muted">{{ product[2] }}</p>
+                            <h6 class="text-primary fw-bold">${{ product[3] }}</h6>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                Database connected! Go to <a href="{{ url_for('admin_login') }}" class="alert-link">Admin Login</a>.
+            </div>
+        {% endif %}
+    </div>
+
 </body>
 </html>

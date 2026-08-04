@@ -1,13 +1,17 @@
 import pymysql
 
-# Database connection helper module
-try:
-    def get_db_connection():
-        return pymysql.connect(
+# XAMPP MySQL Database Connection Function
+def get_db_connection():
+    try:
+        # XAMPP MySQL credentials (host: localhost, user: root, password: '')
+        connection = pymysql.connect(
             host='localhost',
             user='root',
             password='',
-            database='ecommerce'
+            database='ecommerce',
+            autocommit=True
         )
-except exception as e:
-    print(e)
+        return connection
+    except Exception as e:
+        print(f"Database Connection Error: {e}")
+        return None
