@@ -8,5 +8,10 @@ app.secret_key = 'super_secret_key'
 @app.get("/login")
 def login():
     return render_template("login.html")
+
+@app.get("/register")
+def register():
+    return render_template("register.html")
+
 if __name__ == '__main__':
     app.run(debug=True)

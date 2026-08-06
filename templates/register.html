@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | The WTF STORE</title>
+    <title>Register | WTF Store</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
 <div class="container-fluid">
     <div class="row min-vh-100 justify-content-center align-items-center">
         <div class="col-lg-4 col-md-6 col-sm-10">
-            <div class="login-card">
-                <h2>The WTF STORE</h2>
-                <p>Welcome Back</p>
-                <form method="POST">
+            <div class="auth-card">
+                <h2>WTF Store</h2>
+                <p>Create Your Account</p>
+                <form>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Full Name" name="name">
+                    </div>
                     <div class="mb-3">
                         <input type="email" class="form-control" placeholder="Email Address" name="email">
                     </div>
-                    <div class="mb-2">
+                   <div class="mb-3">
                         <input type="password" class="form-control" placeholder="Password" name="password">
                     </div>
-                    <div class="text-end mb-4">
-                        <a href="#">Forgot Password?</a>
+                    <div class="mb-4">
+                        <input type="password" class="form-control" placeholder="Confirm Password" name="cpassword">
                     </div>
-                    <button class="btn login-btn w-100">Login</button>
+                    <button class="btn auth-btn w-100">Create Account</button>
                 </form>
                 <div class="text-center mt-4">
-                    <span>Don't have an account?</span>
-                    <a href="/register">Register</a>
+                    <span>Already have an account?</span>
+                    <a href="/login">Login</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-
 </body>
 </html>
