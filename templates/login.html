@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | The WTF STORE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row min-vh-100 justify-content-center align-items-center">
+        <div class="col-lg-4 col-md-6 col-sm-10">
+            <div class="login-card">
+                <h2>The WTF STORE</h2>
+                <p>Welcome Back</p>
+                <form method="POST">
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Email Address" name="email">
+                    </div>
+                    <div class="mb-2">
+                        <input type="password" class="form-control" placeholder="Password" name="password">
+                    </div>
+                    <div class="text-end mb-4">
+                        <a href="#">Forgot Password?</a>
+                    </div>
+                    <button class="btn login-btn w-100">Login</button>
+                </form>
+                <div class="text-center mt-4">
+                    <span>Don't have an account?</span>
+                    <a href="#">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+</body>
+</html>
