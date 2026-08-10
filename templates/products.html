@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Catalog - E-Commerce Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-bag-heart-fill me-2 text-info"></i>E-Shop <span>Store</span>
+            </a>
+            <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('products') }}">All Products</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-light rounded-circle p-2 position-relative">
+                        <i class="bi bi-cart3 fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-counter">0</span>
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary-custom btn-sm rounded-pill px-3">
+                        <i class="bi bi-speedometer2 me-1"></i> Admin Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="py-5">
+        <div class="container">
+
+            <div class="section-header mb-4">
+                <h1 class="section-title">Products Catalog</h1>
+                <p class="section-subtitle">Browse all products loaded from your Flask / FastAPI backend database.</p>
+            </div>
+
+            <!-- Controls & Filters Bar -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
+                <div class="row g-3 align-items-center">
+                    <!-- Search Input -->
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" id="search-input" class="form-control border-start-0 ps-0" placeholder="Search by product title or keyword...">
+                        </div>
+                    </div>
+                    <!-- Category Select Filter -->
+                    <div class="col-md-6">
+                        <select id="category-filter" class="form-select">
+                            <option value="all">All Categories</option>
+                            {% if categories %}
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Pills Bar -->
+            <div class="d-flex flex-wrap gap-2 mb-4" id="category-pills">
+                <button class="btn btn-sm btn-primary rounded-pill category-pill" data-cat="all">All Items</button>
+                {% if categories %}
+                    {% for cat in categories %}
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill category-pill" data-cat="{{ cat.id }}">
+                            <i class="{{ cat.icon if cat.icon else 'bi bi-tag' }} me-1"></i> {{ cat.name }}
+                        </button>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4" id="products-grid">
+                {% if products %}
+                    {% for prod in products %}
+                        <div class="col product-item-col" data-title="{{ prod.title|lower }}" data-cat="{{ prod.category_id }}" data-desc="{{ (prod.description or '')|lower }}">
+                            <div class="product-card">
+                                <div class="product-img-wrap">
+                                    {% if prod.badge %}
+                                        <span class="product-badge">{{ prod.badge }}</span>
+                                    {% endif %}
+                                    <img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img">
+                                </div>
+                                <div class="product-body">
+                                    <span class="product-category-tag">{{ prod.category_name or 'General' }}</span>
+                                    <h5 class="product-title">{{ prod.title }}</h5>
+                                    <p class="product-desc">{{ prod.description or '' }}</p>
+                                    <div class="product-footer">
+                                        <div>
+                                            <span class="product-price">${{ "%.2f"|format(prod.price) }}</span>
+                                            {% if prod.original_price and prod.original_price > prod.price %}
+                                                <span class="product-price-orig">${{ "%.2f"|format(prod.original_price) }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-outline-secondary btn-sm rounded-circle view-detail-btn"
+                                                    data-title="{{ prod.title }}"
+                                                    data-image="{{ prod.image }}"
+                                                    data-category="{{ prod.category_name or 'General' }}"
+                                                    data-badge="{{ prod.badge or 'New' }}"
+                                                    data-price="${{ "%.2f"|format(prod.price) }}"
+                                                    data-stock="{{ prod.stock }} Units Available"
+                                                    data-desc="{{ prod.description or 'No detailed description available.' }}">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-primary-custom btn-sm rounded-pill add-cart-btn" data-title="{{ prod.title }}">
+                                                <i class="bi bi-cart-plus"></i> Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+                        <h5 class="fw-bold text-secondary">No products available in catalog</h5>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-4">
+                            <img id="modal-img" src="" alt="Product" class="img-fluid rounded-3" style="max-height: 320px; object-fit: contain;">
+                        </div>
+                        <div class="col-md-6 p-4 d-flex flex-column">
+                            <button type="button" class="btn-close ms-auto mb-2" data-bs-dismiss="modal"></button>
+                            <span id="modal-badge" class="badge bg-dark align-self-start mb-2">New</span>
+                            <span id="modal-category" class="text-primary small fw-semibold text-uppercase mb-1">Category</span>
+                            <h4 id="modal-title" class="fw-bold mb-2">Product Title</h4>
+                            <p id="modal-desc" class="text-muted small mb-4">Detailed product description goes here...</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-baseline gap-2 mb-3">
+                                    <h3 id="modal-price" class="fw-bold text-dark mb-0">$0.00</h3>
+                                </div>
+                                <div class="mb-3">
+                                    <small id="modal-stock" class="badge bg-success-subtle text-success">In Stock</small>
+                                </div>
+                                <button id="modal-add-btn" class="btn btn-primary-custom w-100 rounded-pill py-2">
+                                    <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="custom-toast">
+        <i class="bi bi-bag-check-fill text-success fs-5"></i>
+        <span id="toast-message">Item added to cart!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <h5 class="fw-bold text-white mb-2">E-Commerce Products Catalog</h5>
+            <p class="small text-muted mb-3">Rendered directly via server templates.</p>
+            <p class="small mb-0 text-secondary">&copy; 2026 E-Commerce Storefront.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let cartCount = 0;
+
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-message').textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            // Quick View Modal
+            document.querySelectorAll('.view-detail-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const dataset = e.currentTarget.dataset;
+                    document.getElementById('modal-img').src = dataset.image;
+                    document.getElementById('modal-badge').textContent = dataset.badge;
+                    document.getElementById('modal-category').textContent = dataset.category;
+                    document.getElementById('modal-title').textContent = dataset.title;
+                    document.getElementById('modal-desc').textContent = dataset.desc;
+                    document.getElementById('modal-price').textContent = dataset.price;
+                    document.getElementById('modal-stock').textContent = dataset.stock;
+
+                    const addBtn = document.getElementById('modal-add-btn');
+                    addBtn.onclick = () => {
+                        cartCount++;
+                        document.getElementById('cart-counter').textContent = cartCount;
+                        showToast(`"${dataset.title}" added to cart!`);
+                        bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                    };
+
+                    const modal = new bootstrap.Modal(document.getElementById('productModal'));
+                    modal.show();
+                });
+            });
+
+            // Add to Cart
+            document.querySelectorAll('.add-cart-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const title = e.currentTarget.getAttribute('data-title');
+                    cartCount++;
+                    document.getElementById('cart-counter').textContent = cartCount;
+                    showToast(`"${title}" added to cart!`);
+                });
+            });
+
+            // Instant Client-side Search and Filter
+            const searchInput = document.getElementById('search-input');
+            const categoryFilter = document.getElementById('category-filter');
+            const categoryPills = document.querySelectorAll('.category-pill');
+            const productCols = document.querySelectorAll('.product-item-col');
+
+            function filterItems() {
+                const query = searchInput.value.toLowerCase().trim();
+                const selectedCat = categoryFilter.value;
+
+                productCols.forEach(col => {
+                    const title = col.getAttribute('data-title');
+                    const desc = col.getAttribute('data-desc');
+                    const cat = col.getAttribute('data-cat');
+
+                    const matchesSearch = title.includes(query) || desc.includes(query);
+                    const matchesCat = (selectedCat === 'all' || cat === selectedCat);
+
+                    if (matchesSearch && matchesCat) {
+                        col.style.display = 'block';
+                    } else {
+                        col.style.display = 'none';
+                    }
+                });
+            }
+
+            if (searchInput) searchInput.addEventListener('input', filterItems);
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', (e) => {
+                    categoryPills.forEach(p => {
+                        if (p.getAttribute('data-cat') === e.target.value) {
+                            p.classList.replace('btn-outline-secondary', 'btn-primary');
+                        } else {
+                            p.classList.replace('btn-primary', 'btn-outline-secondary');
+                        }
+                    });
+                    filterItems();
+                });
+            }
+
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', (e) => {
+                    const catId = e.currentTarget.getAttribute('data-cat');
+                    categoryFilter.value = catId;
+                    categoryPills.forEach(p => p.classList.replace('btn-primary', 'btn-outline-secondary'));
+                    e.currentTarget.classList.replace('btn-outline-secondary', 'btn-primary');
+                    filterItems();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -8,8 +8,7 @@ def get_db_connection():
             host='localhost',
             user='root',
             password='',
-            database='ecommerce',
-            autocommit=True
+            database='ecommerce', 
         )
         return connection
     except Exception as e:

@@ -4,13 +4,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN-DASHBOARD</title>
+    <title>Admin Dashboard - E-Commerce Management</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    <h1>Welcome {{ admin }} to Admin Dashboard</h1>
-    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-shop me-2 text-info"></i>E-Shop <span>Admin Panel</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <span class="text-light fs-6 opacity-75 d-none d-md-inline">
+                    <i class="bi bi-person-circle me-1"></i> Hello, <strong>{{ admin or 'Admin' }}</strong>
+                </span>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> View Storefront
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3 col-lg-2 admin-sidebar p-3">
+                <div class="nav flex-column nav-pills" id="adminTab" role="tablist">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
+                        <i class="bi bi-grid-1x2-fill"></i> Overview
+                    </button>
+                    <button class="nav-link" id="add-category-tab" data-bs-toggle="pill" data-bs-target="#add-category" type="button" role="tab">
+                        <i class="bi bi-folder-plus"></i> Add Category
+                    </button>
+                    <button class="nav-link" id="add-product-tab" data-bs-toggle="pill" data-bs-target="#add-product" type="button" role="tab">
+                        <i class="bi bi-plus-square-fill"></i> Add Product
+                    </button>
+                    <button class="nav-link" id="manage-categories-tab" data-bs-toggle="pill" data-bs-target="#manage-categories" type="button" role="tab">
+                        <i class="bi bi-tags-fill"></i> All Categories
+                    </button>
+                    <button class="nav-link" id="manage-products-tab" data-bs-toggle="pill" data-bs-target="#manage-products" type="button" role="tab">
+                        <i class="bi bi-box-seam-fill"></i> All Products
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9 col-lg-10 p-4">
+                <div class="tab-content" id="adminTabContent">
+
+                    <!-- Tab 1: Overview Dashboard -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <div class="section-header">
+                            <h2 class="section-title">Dashboard Overview</h2>
+                            <p class="section-subtitle">Real-time metrics of your store categories and catalog items.</p>
+                        </div>
+
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category_msg, message in messages %}
+                                    <div class="alert alert-{{ category_msg }} alert-dismissible fade show rounded-3" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Stats Cards Grid -->
+                        <div class="row g-4 mb-5">
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="stat-card">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Total Products</div>
+                                        <h3 class="fw-bold mb-0 mt-1">{{ products|length if products else 0 }}</h3>
+                                    </div>
+                                    <div class="stat-icon bg-primary-subtle text-primary">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="stat-card">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Total Categories</div>
+                                        <h3 class="fw-bold mb-0 mt-1">{{ categories|length if categories else 0 }}</h3>
+                                    </div>
+                                    <div class="stat-icon bg-info-subtle text-info">
+                                        <i class="bi bi-tags"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="stat-card">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Total Inventory Items</div>
+                                        <h3 class="fw-bold mb-0 mt-1">
+                                            {% set total_stock = namespace(value=0) %}
+                                            {% if products %}
+                                                {% for p in products %}
+                                                    {% set total_stock.value = total_stock.value + (p.stock or 0) %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {{ total_stock.value }}
+                                        </h3>
+                                    </div>
+                                    <div class="stat-icon bg-success-subtle text-success">
+                                        <i class="bi bi-stack"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="stat-card">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Active Status</div>
+                                        <h3 class="fw-bold mb-0 mt-1 text-success">Online</h3>
+                                    </div>
+                                    <div class="stat-icon bg-warning-subtle text-warning">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Shortcut Cards -->
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="badge bg-primary fs-6 p-2 rounded-3 me-3"><i class="bi bi-folder-plus fs-4"></i></div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0">Create New Category</h5>
+                                            <small class="text-muted">Organize products into distinct groupings.</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-secondary small">Define custom categories, assign icons, images, and descriptions to boost navigation on the storefront.</p>
+                                    <button class="btn btn-outline-primary btn-sm rounded-pill mt-auto align-self-start switch-tab-btn" data-target="#add-category-tab">
+                                        Go to Add Category &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="badge bg-success fs-6 p-2 rounded-3 me-3"><i class="bi bi-plus-circle fs-4"></i></div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0">Add New Product</h5>
+                                            <small class="text-muted">Expand your catalog with new merchandise.</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-secondary small">Add item details, pricing, stock levels, badges (Sale, New, Hot), and image links immediately.</p>
+                                    <button class="btn btn-outline-success btn-sm rounded-pill mt-auto align-self-start switch-tab-btn" data-target="#add-product-tab">
+                                        Go to Add Product &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Add Category -->
+                    <div class="tab-pane fade" id="add-category" role="tabpanel">
+                        <div class="section-header">
+                            <h2 class="section-title">Add Category</h2>
+                            <p class="section-subtitle">Create a new category to group related storefront products.</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm rounded-4 p-4">
+                                    <form action="/add_category" method="POST" id="category-form">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" class="form-control" placeholder="e.g. Smart Home, Gaming Accessories" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Bootstrap Icon Class</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-info-circle"></i></span>
+                                                <input type="text" name="icon" class="form-control" placeholder="e.g. bi bi-controller (default: bi bi-tag)">
+                                            </div>
+                                            <div class="form-text">Choose any icon class from Bootstrap Icons (e.g. bi bi-laptop, bi bi-cpu, bi bi-controller).</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Banner Image URL</label>
+                                            <input type="url" name="image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label fw-semibold">Description</label>
+                                            <textarea name="description" class="form-control" rows="3" placeholder="Brief summary of items in this category..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary-custom">
+                                            <i class="bi bi-check-lg me-1"></i> Save Category
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Add Product -->
+                    <div class="tab-pane fade" id="add-product" role="tabpanel">
+                        <div class="section-header">
+                            <h2 class="section-title">Add New Product</h2>
+                            <p class="section-subtitle">Fill in the details below to list a new item in your store catalog.</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <div class="card border-0 shadow-sm rounded-4 p-4">
+                                    <form action="/add_product" method="POST" id="product-form">
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-8">
+                                                <label class="form-label fw-semibold">Product Title <span class="text-danger">*</span></label>
+                                                <input type="text" name="title" class="form-control" placeholder="e.g. Premium Mechanical Gaming Keyboard" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                                                <select name="category_id" class="form-select" required>
+                                                    <option value="">Select Category...</option>
+                                                    {% if categories %}
+                                                        {% for category in categories %}
+                                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Price ($) <span class="text-danger">*</span></label>
+                                                <input type="number" step="0.01" name="price" class="form-control" placeholder="89.99" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Original Price ($)</label>
+                                                <input type="number" step="0.01" name="original_price" class="form-control" placeholder="119.99">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Stock Quantity <span class="text-danger">*</span></label>
+                                                <input type="number" name="stock" class="form-control" placeholder="50" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Badge Tag</label>
+                                                <select name="badge" class="form-select">
+                                                    <option value="New">New</option>
+                                                    <option value="Hot">Hot</option>
+                                                    <option value="Bestseller">Bestseller</option>
+                                                    <option value="Sale">Sale</option>
+                                                    <option value="Featured">Featured</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Product Image URL</label>
+                                                <input type="url" name="image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="form-label fw-semibold">Product Description</label>
+                                            <textarea name="description" class="form-control" rows="4" placeholder="Highlight key features, specifications, and warranty info..."></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary-custom">
+                                            <i class="bi bi-plus-circle me-1"></i> Add Product to Catalog
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: All Categories Table -->
+                    <div class="tab-pane fade" id="manage-categories" role="tabpanel">
+                        <div class="section-header d-flex align-items-center justify-content-between">
+                            <div>
+                                <h2 class="section-title">All Categories</h2>
+                                <p class="section-subtitle">Manage, view, or remove store categories.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm rounded-pill switch-tab-btn" data-target="#add-category-tab">
+                                <i class="bi bi-plus-lg me-1"></i> Add New Category
+                            </button>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Category Name</th>
+                                            <th>Slug</th>
+                                            <th>Description</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if categories %}
+                                            {% for cat in categories %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="category-icon-wrapper shadow-none mb-0" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                                            <i class="{{ cat.icon if cat.icon else 'bi bi-tag' }}"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-bold">{{ cat.name }}</td>
+                                                    <td><code>{{ cat.slug if cat.slug else cat.name|lower|replace(' ', '-') }}</code></td>
+                                                    <td class="text-muted small" style="max-width: 250px;">{{ cat.description or 'N/A' }}</td>
+                                                    <td class="text-end">
+                                                        <form action="/delete_category/{{ cat.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?');">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center py-4 text-muted">No categories added yet.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: All Products Table -->
+                    <div class="tab-pane fade" id="manage-products" role="tabpanel">
+                        <div class="section-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div>
+                                <h2 class="section-title">All Products</h2>
+                                <p class="section-subtitle">Full list of products available in the store.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm rounded-pill switch-tab-btn" data-target="#add-product-tab">
+                                <i class="bi bi-plus-lg me-1"></i> Add Product
+                            </button>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Badge</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if products %}
+                                            {% for prod in products %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-3">
+                                                            <img src="{{ prod.image }}" alt="{{ prod.title }}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                                            <div>
+                                                                <div class="fw-semibold">{{ prod.title }}</div>
+                                                                <small class="text-muted">ID: {{ prod.id }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><span class="badge bg-light text-dark border">{{ prod.category_name or 'General' }}</span></td>
+                                                    <td class="fw-bold text-primary">${{ "%.2f"|format(prod.price) }}</td>
+                                                    <td>
+                                                        <span class="badge {{ 'bg-success-subtle text-success' if prod.stock > 10 else 'bg-warning-subtle text-warning' }}">
+                                                            {{ prod.stock }} in stock
+                                                        </span>
+                                                    </td>
+                                                    <td><span class="badge bg-dark">{{ prod.badge or 'New' }}</span></td>
+                                                    <td class="text-end">
+                                                        <form action="/delete_product/{{ prod.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this product?');">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4 text-muted">No products found.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching helper
+            document.querySelectorAll('.switch-tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetTabId = e.currentTarget.getAttribute('data-target');
+                    const tabTrigger = document.querySelector(targetTabId);
+                    if(tabTrigger) {
+                        const tab = new bootstrap.Tab(tabTrigger);
+                        tab.show();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
