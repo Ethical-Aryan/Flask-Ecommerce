@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | WTF Store</title>
+    <title>Register | E-Shop Store</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -12,26 +12,47 @@
     <div class="row min-vh-100 justify-content-center align-items-center">
         <div class="col-lg-4 col-md-6 col-sm-10">
             <div class="auth-card">
-                <h2>WTF Store</h2>
+                <h2>E-Shop Store</h2>
                 <p>Create Your Account</p>
-                <form>
+
+                {% if error %}
+                    <div class="alert alert-danger py-2 text-center small rounded-3 mb-3">
+                        {{ error }}
+                    </div>
+                {% endif %}
+                {% if mess %}
+                    <div class="alert alert-success py-2 text-center small rounded-3 mb-3">
+                        {{ mess }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="/register">
                     <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Full Name" name="name">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" placeholder="Enter your full name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <input type="email" class="form-control" placeholder="Email Address" name="email">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" placeholder="Enter your email" name="email" required>
                     </div>
-                   <div class="mb-3">
-                        <input type="password" class="form-control" placeholder="Password" name="password">
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" placeholder="Create a password" name="password" required>
                     </div>
                     <div class="mb-4">
-                        <input type="password" class="form-control" placeholder="Confirm Password" name="cpassword">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" placeholder="Confirm your password" name="cpassword" required>
                     </div>
-                    <button class="btn auth-btn w-100">Create Account</button>
+                    <button type="submit" class="btn auth-btn w-100">Create Account</button>
                 </form>
+
                 <div class="text-center mt-4">
                     <span>Already have an account?</span>
                     <a href="/login">Login</a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('index') }}" class="text-muted small">&larr; Back to Storefront</a>
                 </div>
             </div>
         </div>

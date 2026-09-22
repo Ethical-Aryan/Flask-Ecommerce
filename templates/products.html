@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -31,13 +31,18 @@
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-sm btn-outline-light rounded-circle p-2 position-relative">
+                    <button class="btn btn-sm btn-outline-light rounded-circle p-2 position-relative" data-bs-toggle="modal" data-bs-target="#cartModal" title="View Cart">
                         <i class="bi bi-cart3 fs-5"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-counter">0</span>
                     </button>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary-custom btn-sm rounded-pill px-3">
-                        <i class="bi bi-speedometer2 me-1"></i> Admin Panel
-                    </a>
+                    {% if session.get('user') %}
+                        <span class="text-light small"><i class="bi bi-person-circle me-1"></i> {{ session['user'].get('name', 'User') }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary-custom btn-sm rounded-pill px-3">
+                            <i class="bi bi-person me-1"></i> Sign In
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -122,7 +127,7 @@
                                                     data-desc="{{ prod.description or 'No detailed description available.' }}">
                                                 <i class="bi bi-eye"></i>
                                             </button>
-                                            <button class="btn btn-primary-custom btn-sm rounded-pill add-cart-btn" data-title="{{ prod.title }}">
+                                            <button class="btn btn-primary-custom btn-sm rounded-pill add-cart-btn" data-id="{{ prod.id }}" data-title="{{ prod.title }}" data-price="{{ prod.price }}" data-image="{{ prod.image }}">
                                                 <i class="bi bi-cart-plus"></i> Add
                                             </button>
                                         </div>
@@ -176,6 +181,11 @@
         </div>
     </div>
 
+        
+    </div>
+
+    {% include 'cart_modal.html' %}
+
     <!-- Toast Notification -->
     <div id="toast" class="custom-toast">
         <i class="bi bi-bag-check-fill text-success fs-5"></i>
@@ -217,9 +227,13 @@
 
                     const addBtn = document.getElementById('modal-add-btn');
                     addBtn.onclick = () => {
-                        cartCount++;
-                        document.getElementById('cart-counter').textContent = cartCount;
-                        showToast(`"${dataset.title}" added to cart!`);
+                        const rawPrice = parseFloat(dataset.price.replace(/[^0-9.]/g, '')) || 0;
+                        addToCart({
+                            id: dataset.id || Date.now(),
+                            title: dataset.title,
+                            price: rawPrice,
+                            image: dataset.image
+                        });
                         bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
                     };
 
@@ -292,3 +306,5 @@
 </body>
 
 </html>
+
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -24,7 +24,7 @@
                 <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
                     <i class="bi bi-box-arrow-up-right me-1"></i> View Storefront
                 </a>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                <a href="/admin/{{ admin_key }}/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                     <i class="bi bi-box-arrow-right me-1"></i> Logout
                 </a>
             </div>
@@ -178,7 +178,7 @@
                         <div class="row">
                             <div class="col-lg-8">
                                 <div class="card border-0 shadow-sm rounded-4 p-4">
-                                    <form action="/add_category" method="POST" id="category-form">
+                                    <form action="/admin/{{ admin_key }}/add_category" method="POST" id="category-form" enctype="multipart/form-data">
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
                                             <input type="text" name="name" class="form-control" placeholder="e.g. Smart Home, Gaming Accessories" required>
@@ -192,8 +192,9 @@
                                             <div class="form-text">Choose any icon class from Bootstrap Icons (e.g. bi bi-laptop, bi bi-cpu, bi bi-controller).</div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">Banner Image URL</label>
-                                            <input type="url" name="image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                                            <label class="form-label fw-semibold">Category Banner Image</label>
+                                            <input type="file" name="image" class="form-control" accept="image/*">
+                                            <div class="form-text">Upload a banner image from your computer (PNG, JPG, WEBP).</div>
                                         </div>
                                         <div class="mb-4">
                                             <label class="form-label fw-semibold">Description</label>
@@ -218,7 +219,7 @@
                         <div class="row">
                             <div class="col-lg-9">
                                 <div class="card border-0 shadow-sm rounded-4 p-4">
-                                    <form action="/add_product" method="POST" id="product-form">
+                                    <form action="/admin/{{ admin_key }}/add_product" method="POST" id="product-form" enctype="multipart/form-data">
                                         <div class="row g-3 mb-3">
                                             <div class="col-md-8">
                                                 <label class="form-label fw-semibold">Product Title <span class="text-danger">*</span></label>
@@ -264,8 +265,9 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Product Image URL</label>
-                                                <input type="url" name="image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                                                <label class="form-label fw-semibold">Upload Product Image</label>
+                                                <input type="file" name="image" class="form-control" accept="image/*">
+                                                <div class="form-text">Choose a product photo from your file manager (PNG, JPG, WEBP).</div>
                                             </div>
                                         </div>
 
@@ -320,7 +322,7 @@
                                                     <td><code>{{ cat.slug if cat.slug else cat.name|lower|replace(' ', '-') }}</code></td>
                                                     <td class="text-muted small" style="max-width: 250px;">{{ cat.description or 'N/A' }}</td>
                                                     <td class="text-end">
-                                                        <form action="/delete_category/{{ cat.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?');">
+                                                        <form action="/admin/{{ admin_key }}/delete_category/{{ cat.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?');">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -386,7 +388,7 @@
                                                     </td>
                                                     <td><span class="badge bg-dark">{{ prod.badge or 'New' }}</span></td>
                                                     <td class="text-end">
-                                                        <form action="/delete_product/{{ prod.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this product?');">
+                                                        <form action="/admin/{{ admin_key }}/delete_product/{{ prod.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this product?');">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -429,3 +431,4 @@
 </body>
 
 </html>
+
