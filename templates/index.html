@@ -1,73 +1,48 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Storefront - Discover Top Merchandise</title>
+    <title>E-SHOP | Discover Next-Generation Merchandise</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <!-- Header Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="bi bi-bag-heart-fill me-2 text-info"></i>E-Shop <span>Store</span>
-            </a>
-            <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-                <i class="bi bi-list fs-2"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navContent">
-                <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('products') }}">All Products</a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-sm btn-outline-light rounded-circle p-2 position-relative" data-bs-toggle="modal" data-bs-target="#cartModal" title="View Cart">
-                        <i class="bi bi-cart3 fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-counter">0</span>
-                    </button>
-                    {% if session.get('user') %}
-                        <span class="text-light small"><i class="bi bi-person-circle me-1"></i> {{ session['user'].get('name', 'User') }}</span>
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-primary-custom btn-sm rounded-pill px-3">
-                            <i class="bi bi-person me-1"></i> Sign In
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 
     <!-- Main Content -->
     <main class="py-4">
         <div class="container">
 
             <!-- Hero Banner -->
-            <section class="hero-banner d-flex align-items-center">
-                <div class="row align-items-center w-100">
-                    <div class="col-lg-8">
-                        <div class="badge bg-info text-dark px-3 py-2 rounded-pill fw-semibold mb-3">
-                            <i class="bi bi-stars me-1"></i> Special Catalog 2026
+            <section class="hero-banner-pro">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 col-xl-8">
+                        <div class="hero-badge-pill">
+                            <i class="bi bi-stars me-2 text-warning"></i> Certified Premium Quality &bull; Global Edition
                         </div>
-                        <h1 class="hero-title mb-3">Discover Quality Products Designed For Your Lifestyle</h1>
-                        <p class="hero-subtitle mb-4">Explore our curated collections across electronics, apparel, home essentials, and personal wellness with fast shipping and instant order processing.</p>
-                        <div class="d-flex gap-3">
-                            <a href="{{ url_for('products') }}" class="btn btn-primary-custom btn-lg rounded-pill px-4">
-                                <i class="bi bi-bag-check me-2"></i> Shop Products Now
+                        <h1 class="hero-title-pro">
+                            Elevate Your Lifestyle With <span>Next-Gen</span> Design.
+                        </h1>
+                        <p class="hero-subtitle-pro">
+                            Explore meticulously engineered electronics, modern fashion apparel, and home essentials built for everyday performance and unmatched durability.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 align-items-center">
+                            <a href="{{ url_for('products') }}" class="btn btn-primary-custom btn-lg">
+                                <i class="bi bi-bag-check me-2"></i> Shop Full Catalog
                             </a>
-                            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
-                                <i class="bi bi-person-plus me-2"></i> Create Account
+                            <a href="#featured-products" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                                <i class="bi bi-arrow-down-short me-1"></i> Featured Items
                             </a>
+                        </div>
+                        <!-- Micro Trust Stats -->
+                        <div class="d-flex flex-wrap gap-4 mt-4 pt-3 border-top border-secondary border-opacity-25 small text-light opacity-75">
+                            <div><i class="bi bi-star-fill text-warning me-1"></i> <strong>4.9/5</strong> Rating (12k+ Reviews)</div>
+                            <div><i class="bi bi-truck text-info me-1"></i> <strong>Express</strong> Worldwide Dispatch</div>
+                            <div><i class="bi bi-patch-check text-success me-1"></i> <strong>100%</strong> Authentic Guaranteed</div>
                         </div>
                     </div>
                 </div>
@@ -77,11 +52,11 @@
             <section class="mb-5">
                 <div class="section-header d-flex justify-content-between align-items-end">
                     <div>
-                        <h2 class="section-title">Shop By Category</h2>
-                        <p class="section-subtitle">Browse items organized by specialized categories.</p>
+                        <h2 class="section-title">Curated Categories</h2>
+                        <p class="section-subtitle">Discover collections engineered for modern life.</p>
                     </div>
-                    <a href="{{ url_for('products') }}" class="text-decoration-none fw-semibold text-primary">
-                        View All Categories &rarr;
+                    <a href="{{ url_for('products') }}" class="text-decoration-none fw-bold text-primary small">
+                        View All Collections <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
 
@@ -89,30 +64,30 @@
                     {% if categories %}
                         {% for cat in categories %}
                             <div class="col">
-                                <a href="{{ url_for('products') }}?category={{ cat.id }}" class="category-card">
-                                    <div class="category-icon-wrapper">
+                                <a href="{{ url_for('products') }}?category={{ cat.id }}" class="category-card-pro">
+                                    <div class="category-icon-box">
                                         <i class="{{ cat.icon if cat.icon else 'bi bi-tag' }}"></i>
                                     </div>
-                                    <h5 class="fw-bold fs-6 mb-1">{{ cat.name }}</h5>
-                                    <small class="text-muted">{{ cat.description or 'Explore items' }}</small>
+                                    <h5 class="fw-bold fs-6 mb-1 text-dark">{{ cat.name }}</h5>
+                                    <small class="text-muted">{{ cat.description or 'Explore collection' }}</small>
                                 </a>
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="col-12 text-center text-muted py-4">No categories available right now. Please check back soon!</div>
+                        <div class="col-12 text-center text-muted py-4">No categories currently available. Check back shortly!</div>
                     {% endif %}
                 </div>
             </section>
 
             <!-- Featured Products Showcase -->
-            <section class="mb-5">
+            <section class="mb-5" id="featured-products">
                 <div class="section-header d-flex justify-content-between align-items-end">
                     <div>
-                        <h2 class="section-title">Featured Products</h2>
-                        <p class="section-subtitle">Handpicked merchandise from our dynamic backend database.</p>
+                        <h2 class="section-title">Trending & Featured</h2>
+                        <p class="section-subtitle">Top customer favorites directly synced from our backend inventory.</p>
                     </div>
-                    <a href="{{ url_for('products') }}" class="text-decoration-none fw-semibold text-primary">
-                        Explore Full Catalog &rarr;
+                    <a href="{{ url_for('products') }}" class="text-decoration-none fw-bold text-primary small">
+                        Browse All ({{ products|length }}+) <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
 
@@ -120,25 +95,40 @@
                     {% if products %}
                         {% for prod in products %}
                             <div class="col">
-                                <div class="product-card">
+                                <div class="product-card-pro">
                                     <div class="product-img-wrap">
                                         {% if prod.badge %}
-                                            <span class="product-badge">{{ prod.badge }}</span>
+                                            <span class="product-badge-float">{{ prod.badge }}</span>
                                         {% endif %}
-                                        <img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img">
+                                        <img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img" loading="lazy">
                                     </div>
-                                    <div class="product-body">
-                                        <span class="product-category-tag">{{ prod.category_name or 'General' }}</span>
-                                        <h5 class="product-title">{{ prod.title }}</h5>
-                                        <p class="product-desc">{{ prod.description or '' }}</p>
-                                        <div class="product-footer">
+                                    <div class="product-body-pro">
+                                        <span class="product-category-tag">{{ prod.category_name or 'Collection' }}</span>
+                                        <h5 class="product-title-pro">{{ prod.title }}</h5>
+                                        <p class="product-desc-pro">{{ prod.description or 'Engineered with premium materials for maximum durability and satisfaction.' }}</p>
+                                        
+                                        <!-- Rating -->
+                                        <div class="d-flex align-items-center gap-1 mb-3 small text-warning">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <span class="text-muted ms-1" style="font-size: 0.75rem;">(4.9)</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top border-light">
                                             <div>
-                                                <span class="product-price">${{ "%.2f"|format(prod.price) }}</span>
+                                                <span class="product-price-pro">${{ "%.2f"|format(prod.price) }}</span>
                                                 {% if prod.original_price and prod.original_price > prod.price %}
                                                     <span class="product-price-orig">${{ "%.2f"|format(prod.original_price) }}</span>
                                                 {% endif %}
                                             </div>
-                                            <button class="btn btn-primary-custom btn-sm rounded-pill add-cart-btn" data-id="{{ prod.id }}" data-title="{{ prod.title }}" data-price="{{ prod.price }}" data-image="{{ prod.image }}">
+                                            <button class="btn btn-primary-custom btn-sm add-cart-btn" 
+                                                    data-id="{{ prod.id }}" 
+                                                    data-title="{{ prod.title }}" 
+                                                    data-price="{{ prod.price }}" 
+                                                    data-image="{{ prod.image }}">
                                                 <i class="bi bi-cart-plus me-1"></i> Add
                                             </button>
                                         </div>
@@ -147,38 +137,114 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="col-12 text-center text-muted py-4">No products available in this collection right now. Please check back soon!</div>
+                        <div class="col-12 text-center text-muted py-5">
+                            <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+                            <h5>No products currently in stock.</h5>
+                            <p class="small">Our team is restocking right now. Please check back shortly!</p>
+                        </div>
                     {% endif %}
                 </div>
             </section>
 
             <!-- Trust Features Bar -->
-            <section class="bg-white border rounded-4 p-4 shadow-sm my-5">
-                <div class="row g-4 text-center">
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
-                            <i class="bi bi-truck fs-1 text-primary"></i>
-                            <div class="text-start">
-                                <h6 class="fw-bold mb-1">Fast & Free Shipping</h6>
-                                <p class="text-muted small mb-0">On all orders over $50 worldwide</p>
+            <section class="trust-bar-card p-4 p-lg-5 my-5">
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="trust-feature-icon">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Fast Delivery</h6>
+                                <p class="text-muted small mb-0">Free express delivery on orders over $50</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
-                            <i class="bi bi-shield-check fs-1 text-primary"></i>
-                            <div class="text-start">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="trust-feature-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
                                 <h6 class="fw-bold mb-1">Secure Checkout</h6>
-                                <p class="text-muted small mb-0">100% encrypted & protected payments</p>
+                                <p class="text-muted small mb-0">256-bit encrypted bank grade payments</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="trust-feature-icon">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">30-Day Returns</h6>
+                                <p class="text-muted small mb-0">Hassle-free exchanges and instant refunds</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="trust-feature-icon">
+                                <i class="bi bi-headset"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">24/7 Expert Help</h6>
+                                <p class="text-muted small mb-0">Dedicated concierge support whenever you need</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Testimonials -->
+            <section class="mb-5">
+                <div class="text-center mb-4">
+                    <h2 class="section-title">Loved by Thousands Worldwide</h2>
+                    <p class="section-subtitle">Real experiences from our verified community.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="testimonial-card">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="small text-muted mb-3">"The build quality of the gear exceeded all my expectations. Shipped in 2 days and customer service answered my questions instantly!"</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar-sm">S</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">Sarah M.</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-patch-check-fill text-success"></i> Verified Buyer</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
-                            <i class="bi bi-headset fs-1 text-primary"></i>
-                            <div class="text-start">
-                                <h6 class="fw-bold mb-1">24/7 Dedicated Support</h6>
-                                <p class="text-muted small mb-0">Live chat & prompt email response</p>
+                        <div class="testimonial-card">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="small text-muted mb-3">"Seamless shopping experience. The cart is super smooth, and the product arrived in pristine packaging. Absolutely recommended."</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar-sm">D</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">David K.</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-patch-check-fill text-success"></i> Verified Buyer</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="testimonial-card">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="small text-muted mb-3">"Unmatched aesthetic and premium feel. E-Shop has become my default store for all lifestyle and electronics upgrades."</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar-sm">E</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">Elena R.</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-patch-check-fill text-success"></i> Verified Buyer</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -188,10 +254,8 @@
         </div>
     </main>
 
-        
-    </div>
-
     {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
 
     <!-- Toast Notification -->
     <div id="toast" class="custom-toast">
@@ -199,43 +263,8 @@
         <span id="toast-message">Item added to cart!</span>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container text-center">
-            <h5 class="fw-bold text-white mb-2">E-Commerce Storefront</h5>
-            <p class="small text-muted mb-3">Add categories and products from Flask / FastAPI backend.</p>
-            <div class="d-flex justify-content-center gap-3 mb-3">
-                <a href="{{ url_for('index') }}" class="text-muted text-decoration-none small">Home</a>
-                <a href="{{ url_for('products') }}" class="text-muted text-decoration-none small">Products</a>
-
-            </div>
-            <p class="small mb-0 text-secondary">&copy; 2026 E-Commerce Storefront. All rights reserved.</p>
-        </div>
-    </footer>
-
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let cartCount = 0;
-
-            function showToast(message) {
-                const toast = document.getElementById('toast');
-                document.getElementById('toast-message').textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            }
-
-            document.querySelectorAll('.add-cart-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const title = e.currentTarget.getAttribute('data-title');
-                    cartCount++;
-                    document.getElementById('cart-counter').textContent = cartCount;
-                    showToast(`"${title}" added to cart!`);
-                });
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
 </body>
-
 </html>
-

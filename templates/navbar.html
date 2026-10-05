@@ -1,0 +1,131 @@
+<!-- Announcement Top Bar -->
+<div class="announcement-bar py-2">
+    <div class="container d-flex justify-content-between align-items-center text-light small">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-warning text-dark px-2 py-1 fw-bold rounded-pill">⚡ NEW</span>
+            <span class="d-none d-sm-inline">Spring Collection 2026 is Live! Get 20% OFF with code: <strong>SPRING20</strong></span>
+            <span class="d-inline d-sm-none">Spring Sale: 20% OFF!</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="d-none d-md-inline text-muted-light"><i class="bi bi-truck me-1 text-info"></i> Free Shipping Over $50</span>
+            <span class="d-none d-lg-inline text-muted-light"><i class="bi bi-shield-check me-1 text-success"></i> 30-Day Guarantee</span>
+            <span class="badge bg-dark border border-secondary text-light px-2 py-1">🇺🇸 USD ($)</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Glassmorphic Header Navbar -->
+<header class="main-navbar-sticky sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+                <div class="brand-icon-box">
+                    <i class="bi bi-bag-check-fill"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="brand-title">E-SHOP<span class="brand-accent">.</span></span>
+                    <span class="brand-tagline">PREMIUM MERCHANDISE</span>
+                </div>
+            </a>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button class="navbar-toggler border-0 p-2 text-light" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavContent" aria-controls="mainNavContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-1"></i>
+            </button>
+
+            <!-- Nav Content & Search -->
+            <div class="collapse navbar-collapse" id="mainNavContent">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'index' else '' }}" href="{{ url_for('index') }}">
+                            <i class="bi bi-house-door me-1 d-lg-none"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'products' and not request.args.get('category') else '' }}" href="{{ url_for('products') }}">
+                            <i class="bi bi-grid me-1 d-lg-none"></i> All Products
+                        </a>
+                    </li>
+                    {% if categories %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-0 rounded-3 p-2" aria-labelledby="categoriesDropdown">
+                            <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('products') }}"><i class="bi bi-collection me-2 text-info"></i> All Categories</a></li>
+                            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                            {% for cat in categories %}
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="{{ url_for('products') }}?category={{ cat.id }}">
+                                        <span><i class="{{ cat.icon if cat.icon else 'bi bi-tag' }} me-2 text-primary"></i> {{ cat.name }}</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link text-warning-emphasis" href="{{ url_for('products') }}">
+                            <i class="bi bi-stars me-1 text-warning"></i> Deals
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Navbar Integrated Search Bar -->
+                <form class="navbar-search-form me-lg-3 my-2 my-lg-0" action="{{ url_for('products') }}" method="GET">
+                    <div class="input-group search-input-group">
+                        <span class="input-group-text bg-transparent border-0 text-muted ps-3">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control bg-transparent border-0 text-light shadow-none" 
+                               placeholder="Search products, brands..." value="{{ request.args.get('search', '') }}" id="navSearchInput" autocomplete="off">
+                        {% if request.args.get('category') %}
+                            <input type="hidden" name="category" value="{{ request.args.get('category') }}">
+                        {% endif %}
+                    </div>
+                </form>
+
+                <!-- Right Action Icons: Cart & Profile -->
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Cart Button with Counter Badge -->
+                    <button class="btn btn-cart-custom position-relative p-2 rounded-circle" data-bs-toggle="modal" data-bs-target="#cartModal" title="Shopping Cart" id="nav-cart-btn">
+                        <i class="bi bi-bag fs-5 text-light"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary cart-badge-pulse" id="cart-counter">0</span>
+                    </button>
+
+                    <!-- User Account / Authentication -->
+                    {% if session.get('user') %}
+                        <div class="dropdown">
+                            <button class="btn btn-user-pill dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-1" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar-sm">
+                                    {{ session['user'].get('name', 'U')[0]|upper }}
+                                </div>
+                                <span class="d-none d-sm-inline fw-semibold text-light small">{{ session['user'].get('name', 'Account') }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-2" aria-labelledby="userMenuDropdown">
+                                <li class="px-3 py-2 border-bottom border-secondary border-opacity-25">
+                                    <div class="fw-bold text-light">{{ session['user'].get('name', 'Customer') }}</div>
+                                    <small class="text-muted">{{ session['user'].get('email', '') }}</small>
+                                </li>
+                                <li><a class="dropdown-item rounded-2 py-2 mt-1" href="{{ url_for('products') }}"><i class="bi bi-bag-heart me-2 text-info"></i> Browse Catalog</a></li>
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li><a class="dropdown-item rounded-2 py-2 text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                                Sign In
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn btn-primary-custom btn-sm rounded-pill px-3 d-none d-sm-inline-block">
+                                Register
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

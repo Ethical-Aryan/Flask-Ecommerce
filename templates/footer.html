@@ -1,0 +1,78 @@
+<!-- Site Footer -->
+<footer class="site-footer bg-dark-surface pt-5 pb-4 mt-auto">
+    <div class="container">
+        <!-- Top Footer Grid -->
+        <div class="row g-4 pb-5 border-bottom border-secondary border-opacity-25">
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="brand-icon-box">
+                        <i class="bi bi-bag-check-fill"></i>
+                    </div>
+                    <span class="brand-title text-light">E-SHOP<span class="brand-accent">.</span></span>
+                </div>
+                <p class="text-muted small pe-lg-4 mb-4">
+                    Your destination for top-tier modern electronics, apparel, and lifestyle merchandise. Fast, reliable worldwide delivery with exceptional 24/7 customer care.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="#" class="social-icon-btn" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-icon-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-icon-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon-btn" title="GitHub"><i class="bi bi-github"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="footer-title mb-3">Shop Categories</h6>
+                <ul class="list-unstyled footer-links small">
+                    <li class="mb-2"><a href="{{ url_for('products') }}">All Merchandise</a></li>
+                    <li class="mb-2"><a href="{{ url_for('products') }}">Featured Deals</a></li>
+                    <li class="mb-2"><a href="{{ url_for('products') }}">New Arrivals</a></li>
+                    <li class="mb-2"><a href="{{ url_for('products') }}">Trending Tech</a></li>
+                </ul>
+            </div>
+
+            <!-- Customer Service -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="footer-title mb-3">Customer Support</h6>
+                <ul class="list-unstyled footer-links small">
+                    <li class="mb-2"><a href="#">Order Tracking</a></li>
+                    <li class="mb-2"><a href="#">Shipping Rates</a></li>
+                    <li class="mb-2"><a href="#">Easy Returns</a></li>
+                    <li class="mb-2"><a href="#">Help & FAQs</a></li>
+                    <li class="mb-2"><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <!-- VIP Newsletter -->
+            <div class="col-lg-4 col-md-12">
+                <h6 class="footer-title mb-3">Subscribe to VIP Perks</h6>
+                <p class="text-muted small mb-3">Receive early drop notifications, secret promotional discounts, and free shipping codes directly in your inbox.</p>
+                <form class="newsletter-form d-flex gap-2" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Check your email for your 15% discount code.'); this.reset();">
+                    <input type="email" class="form-control rounded-pill px-3 py-2 small" placeholder="Enter your email" required>
+                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-semibold text-nowrap">Join</button>
+                </form>
+                <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                    🔒 We respect your privacy. Unsubscribe anytime with 1 click.
+                </small>
+            </div>
+        </div>
+
+        <!-- Bottom Footer -->
+        <div class="row pt-4 align-items-center justify-content-between small text-muted">
+            <div class="col-md-6 mb-3 mb-md-0 text-center text-md-start">
+                &copy; 2026 E-SHOP Global Inc. All rights reserved. Crafted for excellence.
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <div class="d-inline-flex gap-3 align-items-center">
+                    <span class="small me-2">Secure Payments:</span>
+                    <i class="bi bi-credit-card-2-front fs-5 text-light opacity-75" title="Visa / MasterCard"></i>
+                    <i class="bi bi-paypal fs-5 text-info opacity-75" title="PayPal"></i>
+                    <i class="bi bi-apple fs-5 text-light opacity-75" title="Apple Pay"></i>
+                    <i class="bi bi-shield-lock-fill fs-5 text-success opacity-75" title="SSL Encrypted"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

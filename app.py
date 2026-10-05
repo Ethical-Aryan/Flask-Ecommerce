@@ -18,21 +18,37 @@ def api(method, endpoint, **kwargs):
         return None
 
 
+@app.context_processor
+def inject_global_data():
+    """Ensure categories are available in the navbar across all templates."""
+    return {
+        "categories": api("GET", "/categories") or []
+    }
+
+
 # --- Customer Storefront Routes ---
 @app.route("/")
 def index():
-    return render_template("index.html", 
-                           categories=api("GET", "/categories") or [], 
-                           products=api("GET", "/products") or [])
+    return render_template("index.html", products=api("GET", "/products") or [])
 
 
 @app.route("/products")
 def products():
     cat_id = request.args.get("category")
+    search_q = request.args.get("search", "").strip().lower()
     params = {"category_id": cat_id} if cat_id else None
+    all_products = api("GET", "/products", params=params) or []
+    
+    if search_q:
+        all_products = [
+            p for p in all_products 
+            if search_q in p.get("title", "").lower() or search_q in (p.get("description") or "").lower()
+        ]
+        
     return render_template("products.html", 
-                           categories=api("GET", "/categories") or [], 
-                           products=api("GET", "/products", params=params) or [])
+                           products=all_products,
+                           current_category=cat_id,
+                           search_query=request.args.get("search", ""))
 
 
 # --- Customer Authentication ---

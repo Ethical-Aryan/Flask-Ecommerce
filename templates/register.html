@@ -1,63 +1,80 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | E-Shop Store</title>
+    <title>Create Customer Account | E-SHOP</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-<div class="container-fluid">
-    <div class="row min-vh-100 justify-content-center align-items-center">
-        <div class="col-lg-4 col-md-6 col-sm-10">
-            <div class="auth-card">
-                <h2>E-Shop Store</h2>
-                <p>Create Your Account</p>
+<body class="bg-light">
 
-                {% if error %}
-                    <div class="alert alert-danger py-2 text-center small rounded-3 mb-3">
-                        {{ error }}
-                    </div>
-                {% endif %}
-                {% if mess %}
-                    <div class="alert alert-success py-2 text-center small rounded-3 mb-3">
-                        {{ mess }}
-                    </div>
-                {% endif %}
+    {% include 'navbar.html' %}
 
-                <form method="POST" action="/register">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" placeholder="Enter your full name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-control" placeholder="Enter your email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" placeholder="Create a password" name="password" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" placeholder="Confirm your password" name="cpassword" required>
-                    </div>
-                    <button type="submit" class="btn auth-btn w-100">Create Account</button>
-                </form>
+    <main class="d-flex align-items-center py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5 col-xl-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 p-sm-5 bg-white">
+                        <div class="text-center mb-4">
+                            <div class="brand-icon-box mx-auto mb-3" style="width: 48px; height: 48px; font-size: 1.4rem;">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1 text-dark">Create Account</h3>
+                            <p class="text-muted small">Join E-SHOP for exclusive perks & drops</p>
+                        </div>
 
-                <div class="text-center mt-4">
-                    <span>Already have an account?</span>
-                    <a href="/login">Login</a>
-                </div>
+                        {% if error %}
+                            <div class="alert alert-danger py-2 small rounded-3 mb-3 text-center">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error }}
+                            </div>
+                        {% endif %}
 
-                <div class="text-center mt-3">
-                    <a href="{{ url_for('index') }}" class="text-muted small">&larr; Back to Storefront</a>
+                        <form method="POST" action="/register">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-secondary">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                    <input type="text" class="form-control bg-light border-start-0" placeholder="John Doe" name="name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-secondary">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                                    <input type="email" class="form-control bg-light border-start-0" placeholder="name@example.com" name="email" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-secondary">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                                    <input type="password" class="form-control bg-light border-start-0" placeholder="••••••••" name="password" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold text-secondary">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-lock text-muted"></i></span>
+                                    <input type="password" class="form-control bg-light border-start-0" placeholder="••••••••" name="cpassword" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom w-100 py-2 fw-semibold">Register Now</button>
+                        </form>
+
+                        <div class="text-center mt-4 pt-3 border-top border-light small text-muted">
+                            Already have an account? <a href="{{ url_for('login') }}" class="text-primary fw-bold text-decoration-none">Sign In</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    </main>
+
+    {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
 </body>
 </html>
