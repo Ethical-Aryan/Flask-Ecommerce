@@ -51,6 +51,12 @@ def products():
                            search_query=request.args.get("search", ""))
 
 
+
+
+@app.route("/cart")
+def cart_page():
+    return render_template("cart.html")
+
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
     product = api("GET", f"/products/{product_id}")

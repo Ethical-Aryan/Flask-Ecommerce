@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart | E-SHOP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-light">
+
+    {% include 'navbar.html' %}
+
+    <main class="py-5">
+        <div class="container">
+
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('products') }}" class="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1 text-dark">Shopping Cart</h2>
+                    <p class="text-muted small mb-0">Review your selected merchandise before checkout</p>
+                </div>
+                <div id="cart-item-count-badge" class="badge bg-primary px-3 py-2 rounded-pill fs-6">
+                    0 items
+                </div>
+            </div>
+
+            <!-- Cart Content Layout -->
+            <div class="row g-4" id="cart-content-layout">
+                <!-- Left Column: Cart Items Table -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light small text-uppercase text-muted">
+                                    <tr>
+                                        <th class="ps-4" style="min-width: 250px;">Product</th>
+                                        <th class="text-center" style="min-width: 110px;">Price</th>
+                                        <th class="text-center" style="min-width: 140px;">Quantity</th>
+                                        <th class="text-end" style="min-width: 110px;">Subtotal</th>
+                                        <th class="text-center pe-4" style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body">
+                                    <!-- Dynamic Rows rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Card Action Buttons -->
+                        <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('products') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                                <i class="bi bi-arrow-left me-1"></i> Continue Shopping
+                            </a>
+                            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="clearCartFull()">
+                                <i class="bi bi-trash3 me-1"></i> Clear Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Guarantee Banner -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                        <div class="row g-3 text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-truck text-primary fs-4"></i>
+                                    <div class="text-start">
+                                        <span class="fw-bold d-block small text-dark">Free Shipping</span>
+                                        <small class="text-muted">On all orders over $50</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-shield-check text-success fs-4"></i>
+                                    <div class="text-start">
+                                        <span class="fw-bold d-block small text-dark">Secure Payments</span>
+                                        <small class="text-muted">256-Bit SSL Encrypted</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-arrow-repeat text-info fs-4"></i>
+                                    <div class="text-start">
+                                        <span class="fw-bold d-block small text-dark">30-Day Returns</span>
+                                        <small class="text-muted">Hassle-free guarantee</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Order Summary Card -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 90px; z-index: 10;">
+                        <h5 class="fw-bold mb-3 text-dark pb-2 border-bottom">Order Summary</h5>
+
+                        <div class="d-flex justify-content-between text-muted small mb-2">
+                            <span>Bag Subtotal:</span>
+                            <span class="fw-bold text-dark" id="page-cart-subtotal">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mb-2">
+                            <span>Estimated Shipping:</span>
+                            <span class="fw-bold" id="page-cart-shipping">FREE</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-success small mb-2 d-none" id="page-discount-row">
+                            <span>Promo Discount:</span>
+                            <span class="fw-bold" id="page-cart-discount">-$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mb-3">
+                            <span>Taxes:</span>
+                            <span class="fw-bold text-dark">$0.00</span>
+                        </div>
+
+                        <!-- Promo Code Box -->
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control form-control-sm text-uppercase" placeholder="Promo code (e.g. SPRING20)" id="page-promo-input">
+                            <button class="btn btn-outline-dark btn-sm px-3" type="button" onclick="applyPagePromo()">Apply</button>
+                        </div>
+                        <div id="page-promo-msg" class="small mb-3 d-none"></div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top mb-4">
+                            <h6 class="fw-bold text-dark mb-0">Estimated Total:</h6>
+                            <h4 class="fw-extrabold text-primary fw-bold mb-0" id="page-cart-total">$0.00</h4>
+                        </div>
+
+                        <a href="{{ url_for('checkout') }}" class="btn btn-primary-custom btn-lg w-100 py-3 fw-bold shadow mb-2 text-center text-decoration-none">
+                            <i class="bi bi-credit-card me-2"></i> Proceed to Checkout
+                        </a>
+
+                        <small class="text-muted text-center d-block" style="font-size: 0.78rem;">
+                            🔒 Taxes and shipping calculated during checkout
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Cart Fallback Screen -->
+            <div id="cart-page-empty" class="text-center py-5 d-none">
+                <div class="card border-0 shadow-sm rounded-4 p-5 mx-auto bg-white" style="max-width: 520px;">
+                    <div class="rounded-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-bag-x fs-1 text-muted"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Your Shopping Cart is Empty</h3>
+                    <p class="text-muted small mb-4">Looks like you haven't added any products to your cart yet. Explore our curated collections to find what you need!</p>
+                    <a href="{{ url_for('products') }}" class="btn btn-primary-custom rounded-pill px-4 py-2">
+                        <i class="bi bi-grid me-1"></i> Start Shopping Now
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
+
+    <div id="toast" class="custom-toast">
+        <i class="bi bi-bag-check-fill text-success fs-5"></i>
+        <span id="toast-message">Item updated in cart!</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        let pagePromoDiscount = 0.0;
+
+        function renderCartPage() {
+            const cart = getCart();
+            const layout = document.getElementById('cart-content-layout');
+            const emptyScreen = document.getElementById('cart-page-empty');
+            const badge = document.getElementById('cart-item-count-badge');
+            const tbody = document.getElementById('cart-table-body');
+
+            if (!cart || cart.length === 0) {
+                if (layout) layout.classList.add('d-none');
+                if (emptyScreen) emptyScreen.classList.remove('d-none');
+                if (badge) badge.textContent = '0 items';
+                return;
+            }
+
+            if (layout) layout.classList.remove('d-none');
+            if (emptyScreen) emptyScreen.classList.add('d-none');
+
+            let totalCount = 0;
+            let subtotal = 0;
+            let rowsHtml = '';
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                totalCount += item.quantity;
+                subtotal += itemTotal;
+
+                rowsHtml += `
+                    <tr>
+                        <td class="ps-4 py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="/product/${item.id}">
+                                    <img src="${item.image}" alt="${item.title}" class="rounded-3 border" style="width: 64px; height: 64px; object-fit: cover;">
+                                </a>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">
+                                        <a href="/product/${item.id}" class="text-decoration-none text-dark">${item.title}</a>
+                                    </h6>
+                                    <small class="text-muted">Item ID: #${item.id}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center fw-semibold text-secondary">$${item.price.toFixed(2)}</td>
+                        <td class="text-center">
+                            <div class="input-group input-group-sm mx-auto" style="width: 110px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateItemQuantity(${item.id}, -1)">-</button>
+                                <span class="input-group-text bg-white fw-bold px-3">${item.quantity}</span>
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateItemQuantity(${item.id}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="text-end fw-bold text-dark">$${itemTotal.toFixed(2)}</td>
+                        <td class="text-center pe-4">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle p-1" title="Remove Item" onclick="removeCartItem(${item.id})">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+            badge.textContent = `${totalCount} item${totalCount !== 1 ? 's' : ''}`;
+
+            const shipping = (subtotal >= 50.0 || subtotal === 0) ? 0.0 : 9.99;
+            const discount = subtotal * pagePromoDiscount;
+            const total = Math.max(0, subtotal - discount + shipping);
+
+            document.getElementById('page-cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('page-cart-shipping').textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+
+            if (discount > 0) {
+                document.getElementById('page-discount-row').classList.remove('d-none');
+                document.getElementById('page-cart-discount').textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                document.getElementById('page-discount-row').classList.add('d-none');
+            }
+
+            document.getElementById('page-cart-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function updateItemQuantity(id, delta) {
+            let cart = getCart();
+            const item = cart.find(i => i.id == id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id != id);
+                }
+                saveCart(cart);
+                renderCartPage();
+                showToast('Cart updated!');
+            }
+        }
+
+        function removeCartItem(id) {
+            let cart = getCart();
+            cart = cart.filter(i => i.id != id);
+            saveCart(cart);
+            renderCartPage();
+            showToast('Item removed from cart');
+        }
+
+        function clearCartFull() {
+            if (confirm('Are you sure you want to clear your entire cart?')) {
+                localStorage.removeItem('eshop_cart');
+                updateCartCounter();
+                renderCartPage();
+                showToast('Cart cleared');
+            }
+        }
+
+        function applyPagePromo() {
+            const code = document.getElementById('page-promo-input').value.trim().toUpperCase();
+            const msg = document.getElementById('page-promo-msg');
+            if (code === 'SPRING20') {
+                pagePromoDiscount = 0.20;
+                msg.className = 'small mb-3 text-success';
+                msg.textContent = '✓ 20% discount code applied!';
+                msg.classList.remove('d-none');
+            } else if (code) {
+                msg.className = 'small mb-3 text-danger';
+                msg.textContent = 'Invalid promo code.';
+                msg.classList.remove('d-none');
+            }
+            renderCartPage();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCartPage);
+    </script>
+</body>
+</html>
