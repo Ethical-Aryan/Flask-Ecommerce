@@ -28,7 +28,7 @@
             </div>
         {% endif %}
 
-        <form action="/admin/{{ admin_key }}" method="POST">
+        <form action="/login" method="POST">
             <div class="mb-3">
                 <label class="form-label text-light small fw-semibold">Username</label>
                 <div class="input-group">
@@ -51,7 +51,7 @@
         </form>
 
         <div class="text-center pt-2 border-top border-secondary border-opacity-25">
-            <a href="{{ url_for('index') }}" class="text-secondary text-decoration-none small">
+            <a href="http://127.0.0.1:5000" target="_blank" class="text-secondary text-decoration-none small">
                 &larr; Back to Storefront
             </a>
         </div>
