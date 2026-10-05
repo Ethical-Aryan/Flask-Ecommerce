@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} | E-SHOP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="py-4">
+        <div class="container">
+
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('products') }}" class="text-decoration-none">Catalog</a></li>
+                    {% if product.category_name %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('products') }}?category={{ product.category_id }}" class="text-decoration-none">{{ product.category_name }}</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item active text-truncate" style="max-width: 280px;" aria-current="page">{{ product.title }}</li>
+                </ol>
+            </nav>
+
+            <!-- Main Product Showcase Card -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-5">
+                <div class="row g-0">
+                    <!-- Left Column: Product Image & Badges -->
+                    <div class="col-lg-6 p-4 p-md-5 d-flex flex-column align-items-center justify-content-center bg-light border-end">
+                        <div class="position-relative w-100 text-center" style="max-width: 480px;">
+                            {% if product.badge %}
+                                <span class="product-badge-float fs-6 px-3 py-1">{{ product.badge }}</span>
+                            {% endif %}
+                            <img src="{{ product.image }}" alt="{{ product.title }}" 
+                                 class="img-fluid rounded-4 shadow-sm" style="max-height: 420px; object-fit: contain; width: 100%;">
+                        </div>
+                        <div class="d-flex justify-content-center gap-4 mt-4 text-muted small">
+                            <span><i class="bi bi-shield-check text-success me-1"></i> 2-Year Warranty</span>
+                            <span><i class="bi bi-truck text-primary me-1"></i> Fast Dispatch</span>
+                            <span><i class="bi bi-arrow-repeat text-info me-1"></i> 30-Day Returns</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Product Info & Purchase Actions -->
+                    <div class="col-lg-6 p-4 p-md-5 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="product-category-tag fs-6 mb-0">{{ product.category_name or 'Special Collection' }}</span>
+                            {% if product.stock > 0 %}
+                                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill small">
+                                    <i class="bi bi-check-circle-fill me-1"></i> In Stock ({{ product.stock }} units)
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill small">Out of Stock</span>
+                            {% endif %}
+                        </div>
+
+                        <h1 class="fw-bold mb-3 text-dark fs-2">{{ product.title }}</h1>
+
+                        <!-- Ratings Review Strip -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="text-warning small">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <span class="fw-bold small text-dark">4.9</span>
+                            <span class="text-muted small">&bull; 148 Customer Reviews</span>
+                        </div>
+
+                        <!-- Price Strip -->
+                        <div class="d-flex align-items-baseline gap-3 mb-4 p-3 rounded-3 bg-light">
+                            <span class="fs-2 fw-extrabold text-primary fw-bold">${{ "%.2f"|format(product.price) }}</span>
+                            {% if product.original_price and product.original_price > product.price %}
+                                <span class="fs-5 text-muted text-decoration-line-through">${{ "%.2f"|format(product.original_price) }}</span>
+                                <span class="badge bg-danger rounded-pill px-2 py-1 small">
+                                    SAVE {{ "%.0f"|format(((product.original_price - product.price) / product.original_price) * 100) }}%
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-2">Product Description</h6>
+                            <p class="text-secondary leading-relaxed mb-0">
+                                {{ product.description or 'Engineered with top-tier industrial design and tested to ensure peak durability and everyday satisfaction. Comes with full manufacturer accessories and support.' }}
+                            </p>
+                        </div>
+
+                        <!-- Key Feature Highlights -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-2">Key Highlights</h6>
+                            <ul class="list-unstyled small text-muted mb-0">
+                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2 fw-bold"></i> Certified authentic original manufacturer hardware</li>
+                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2 fw-bold"></i> Precision calibrated for superior user comfort & performance</li>
+                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2 fw-bold"></i> Eligible for free insured courier shipping on orders over $50</li>
+                            </ul>
+                        </div>
+
+                        <!-- Quantity Selector & Action Buttons -->
+                        <div class="mt-auto pt-3 border-top">
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-auto">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Quantity:</label>
+                                    <div class="input-group" style="width: 130px;">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="adjustQty(-1)">-</button>
+                                        <input type="number" id="detail-qty" class="form-control form-control-sm text-center fw-bold" value="1" min="1" max="{{ product.stock or 99 }}">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="adjustQty(1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small text-transparent mb-1 d-block">&nbsp;</label>
+                                    <button class="btn btn-primary-custom w-100 py-2 fw-semibold" id="detail-add-cart-btn"
+                                            data-id="{{ product.id }}" 
+                                            data-title="{{ product.title }}" 
+                                            data-price="{{ product.price }}" 
+                                            data-image="{{ product.image }}">
+                                        <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <div class="col-12 col-sm-auto">
+                                    <label class="form-label small text-transparent mb-1 d-block d-none d-sm-block">&nbsp;</label>
+                                    <button class="btn btn-dark w-100 py-2 px-4 rounded-pill fw-semibold" onclick="buyNow()">
+                                        <i class="bi bi-lightning-charge me-1 text-warning"></i> Buy Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabbed Specifications & Customer Reviews -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+                <ul class="nav nav-tabs border-bottom mb-4" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-dark" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Specifications</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-dark" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">Shipping & Returns</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-dark" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Verified Reviews (148)</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="productTabContent">
+                    <div class="tab-pane fade show active" id="specs" role="tabpanel">
+                        <table class="table table-bordered table-striped small mb-0">
+                            <tbody>
+                                <tr><th style="width: 200px;">Product Model</th><td>{{ product.title }}</td></tr>
+                                <tr><th>Category</th><td>{{ product.category_name or 'General' }}</td></tr>
+                                <tr><th>Inventory Status</th><td>{{ product.stock }} units available in local warehouse</td></tr>
+                                <tr><th>Warranty</th><td>2-Year Limited Replacement Warranty</td></tr>
+                                <tr><th>Authentication</th><td>100% Guaranteed Genuine & Verified</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="shipping" role="tabpanel">
+                        <div class="p-2">
+                            <h6 class="fw-bold mb-2">Express Global Shipping</h6>
+                            <p class="text-muted small mb-3">All orders are processed and handed to our courier within 24 business hours. Tracking numbers are sent via email as soon as dispatched.</p>
+                            <h6 class="fw-bold mb-2">Hassle-Free 30-Day Returns</h6>
+                            <p class="text-muted small mb-0">If you are not 100% satisfied with your merchandise, return it in original condition within 30 days for a full refund or direct exchange.</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                        <div class="row g-3 p-2">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="d-flex text-warning mb-1 small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                                    <strong class="d-block text-dark small mb-1">Phenomenal build quality!</strong>
+                                    <p class="text-muted small mb-1">"Ordered this last week and arrived safely in 2 days. The finish and attention to detail is truly 5 stars."</p>
+                                    <small class="text-secondary">- Marcus T. &bull; <i class="bi bi-patch-check-fill text-success"></i> Verified Purchase</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="d-flex text-warning mb-1 small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                                    <strong class="d-block text-dark small mb-1">Exceeded expectations!</strong>
+                                    <p class="text-muted small mb-1">"Very impressed with the responsiveness and customer support. Definitely purchasing more from this store."</p>
+                                    <small class="text-secondary">- Chloe L. &bull; <i class="bi bi-patch-check-fill text-success"></i> Verified Purchase</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products Section -->
+            {% if related_products %}
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4 text-dark">Related Items You May Like</h3>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                    {% for prod in related_products %}
+                        <div class="col">
+                            <div class="product-card-pro">
+                                <div class="product-img-wrap">
+                                    {% if prod.badge %}
+                                        <span class="product-badge-float">{{ prod.badge }}</span>
+                                    {% endif %}
+                                    <a href="{{ url_for('product_detail', product_id=prod.id) }}">
+                                        <img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img">
+                                    </a>
+                                </div>
+                                <div class="product-body-pro">
+                                    <span class="product-category-tag">{{ prod.category_name or 'Collection' }}</span>
+                                    <h5 class="product-title-pro">
+                                        <a href="{{ url_for('product_detail', product_id=prod.id) }}" class="text-decoration-none text-dark">
+                                            {{ prod.title }}
+                                        </a>
+                                    </h5>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top border-light">
+                                        <span class="product-price-pro">${{ "%.2f"|format(prod.price) }}</span>
+                                        <button class="btn btn-primary-custom btn-sm add-cart-btn" 
+                                                data-id="{{ prod.id }}" data-title="{{ prod.title }}" 
+                                                data-price="{{ prod.price }}" data-image="{{ prod.image }}">
+                                            <i class="bi bi-cart-plus me-1"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
+
+    <div id="toast" class="custom-toast">
+        <i class="bi bi-bag-check-fill text-success fs-5"></i>
+        <span id="toast-message">Item added to cart!</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        function adjustQty(delta) {
+            const input = document.getElementById('detail-qty');
+            let val = parseInt(input.value) || 1;
+            val = Math.max(1, val + delta);
+            input.value = val;
+        }
+
+        document.getElementById('detail-add-cart-btn').addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const title = this.getAttribute('data-title');
+            const price = parseFloat(this.getAttribute('data-price'));
+            const image = this.getAttribute('data-image');
+            const qty = parseInt(document.getElementById('detail-qty').value) || 1;
+
+            let cart = getCart();
+            const existing = cart.find(item => item.id == id);
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ id: id, title: title, price: price, image: image, quantity: qty });
+            }
+            saveCart(cart);
+            showToast(`${qty}x "${title}" added to cart!`);
+        });
+
+        function buyNow() {
+            const btn = document.getElementById('detail-add-cart-btn');
+            const id = btn.getAttribute('data-id');
+            const title = btn.getAttribute('data-title');
+            const price = parseFloat(btn.getAttribute('data-price'));
+            const image = btn.getAttribute('data-image');
+            const qty = parseInt(document.getElementById('detail-qty').value) || 1;
+
+            let cart = getCart();
+            const existing = cart.find(item => item.id == id);
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ id: id, title: title, price: price, image: image, quantity: qty });
+            }
+            saveCart(cart);
+            window.location.href = '/checkout';
+        }
+    </script>
+</body>
+</html>

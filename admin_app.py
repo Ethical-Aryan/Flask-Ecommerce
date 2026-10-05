@@ -75,11 +75,9 @@ def dashboard():
 def add_category():
     if "admin" not in session:
         return redirect(url_for("login"))
-    img = save_image(request.files.get("image"))
     api("POST", "/categories", json={
         "name": request.form.get("name"),
         "icon": request.form.get("icon") or "bi bi-tag",
-        "image": img,
         "description": request.form.get("description") or ""
     })
     flash("Category added successfully!", "success")

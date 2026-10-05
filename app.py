@@ -1,4 +1,4 @@
-import os, requests
+import os, json, requests
 from flask import Flask, request, render_template, redirect, session, url_for
 
 app = Flask(__name__)
@@ -49,6 +49,57 @@ def products():
                            products=all_products,
                            current_category=cat_id,
                            search_query=request.args.get("search", ""))
+
+
+@app.route("/product/<int:product_id>")
+def product_detail(product_id):
+    product = api("GET", f"/products/{product_id}")
+    if not product:
+        return redirect(url_for("products"))
+    related = api("GET", "/products", params={"category_id": product.get("category_id")}) or []
+    related = [p for p in related if p.get("id") != product_id][:4]
+    return render_template("product_detail.html", product=product, related_products=related)
+
+
+# --- Checkout & Order Management ---
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+    if request.method == "POST":
+        payload = {
+            "customer_name": request.form.get("customer_name"),
+            "customer_email": request.form.get("customer_email"),
+            "customer_phone": request.form.get("customer_phone"),
+            "address_line1": request.form.get("address_line1"),
+            "address_line2": request.form.get("address_line2") or "",
+            "city": request.form.get("city"),
+            "state": request.form.get("state"),
+            "postal_code": request.form.get("postal_code"),
+            "country": request.form.get("country") or "United States",
+            "payment_method": request.form.get("payment_method") or "Credit Card",
+            "subtotal": float(request.form.get("subtotal") or 0),
+            "shipping": float(request.form.get("shipping") or 0),
+            "total": float(request.form.get("total") or 0),
+            "items_json": request.form.get("items_json") or "[]"
+        }
+        res = api("POST", "/orders", json=payload)
+        if res and "order_number" in res:
+            return redirect(url_for("order_success", order_number=res["order_number"]))
+        return render_template("checkout.html", error="Could not place order. Please try again.")
+    return render_template("checkout.html")
+
+
+@app.route("/order-success/<order_number>")
+def order_success(order_number):
+    order = api("GET", f"/orders/{order_number}")
+    if not order:
+        return redirect(url_for("index"))
+    items = []
+    if order.get("items_json"):
+        try:
+            items = json.loads(order["items_json"])
+        except Exception:
+            items = []
+    return render_template("order_success.html", order=order, items=items)
 
 
 # --- Customer Authentication ---

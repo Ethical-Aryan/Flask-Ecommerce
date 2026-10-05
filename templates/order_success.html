@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | E-SHOP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-light">
+
+    {% include 'navbar.html' %}
+
+    <main class="py-5">
+        <div class="container" style="max-width: 850px;">
+
+            <!-- Confirmation Banner -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center bg-white mb-4">
+                <div class="rounded-circle bg-success-subtle text-success mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                     style="width: 72px; height: 72px; font-size: 2.2rem;">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-1">Thank You For Your Order!</h2>
+                <p class="text-muted mb-3">Your order has been received and confirmed by our fulfillment team.</p>
+                <div class="badge bg-light text-dark border px-4 py-2 rounded-pill fs-6 mb-4">
+                    Order Number: <strong class="text-primary">{{ order.order_number }}</strong>
+                </div>
+
+                <!-- Status Progress Stepper -->
+                <div class="d-flex justify-content-between position-relative my-4 px-md-5">
+                    <div class="text-center z-1">
+                        <div class="rounded-circle bg-primary text-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 36px; height: 36px;">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <small class="fw-bold d-block text-dark">Confirmed</small>
+                    </div>
+                    <div class="text-center z-1">
+                        <div class="rounded-circle bg-primary text-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 36px; height: 36px;">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <small class="fw-bold d-block text-dark">Processing</small>
+                    </div>
+                    <div class="text-center z-1 opacity-50">
+                        <div class="rounded-circle bg-secondary text-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 36px; height: 36px;">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <small class="fw-bold d-block text-muted">Dispatched</small>
+                    </div>
+                    <div class="text-center z-1 opacity-50">
+                        <div class="rounded-circle bg-secondary text-light d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 36px; height: 36px;">
+                            <i class="bi bi-house-door"></i>
+                        </div>
+                        <small class="fw-bold d-block text-muted">Delivered</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Details Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <h5 class="fw-bold text-dark mb-4 pb-2 border-bottom">Order Details & Delivery Information</h5>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-muted small text-uppercase">Shipping Address</h6>
+                        <div class="p-3 bg-light rounded-3">
+                            <strong class="d-block text-dark">{{ order.customer_name }}</strong>
+                            <div class="text-muted small">{{ order.address_line1 }}</div>
+                            {% if order.address_line2 %}
+                                <div class="text-muted small">{{ order.address_line2 }}</div>
+                            {% endif %}
+                            <div class="text-muted small">{{ order.city }}, {{ order.state }} {{ order.postal_code }}</div>
+                            <div class="text-muted small">{{ order.country }}</div>
+                            <div class="text-muted small mt-2"><i class="bi bi-telephone me-1"></i> {{ order.customer_phone }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-muted small text-uppercase">Payment & Summary</h6>
+                        <div class="p-3 bg-light rounded-3">
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Payment Method:</span>
+                                <strong class="text-dark">{{ order.payment_method }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Subtotal:</span>
+                                <span class="text-dark">${{ "%.2f"|format(order.subtotal) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Shipping:</span>
+                                <span class="text-dark">{{ 'FREE' if order.shipping == 0 else ('$%.2f'|format(order.shipping)) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small fw-bold pt-2 border-top mt-2">
+                                <span>Total Paid:</span>
+                                <span class="text-primary fs-6">${{ "%.2f"|format(order.total) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Purchased -->
+                <h6 class="fw-bold text-muted small text-uppercase mb-3">Items Purchased</h6>
+                <div class="table-responsive">
+                    <table class="table align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if items %}
+                                {% for it in items %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="{{ it.image }}" alt="{{ it.title }}" class="rounded" style="width: 44px; height: 44px; object-fit: cover;">
+                                                <span class="fw-semibold text-dark">{{ it.title }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">{{ it.quantity }}</td>
+                                        <td class="text-end">${{ "%.2f"|format(it.price) }}</td>
+                                        <td class="text-end fw-bold text-dark">${{ "%.2f"|format(it.price * it.quantity) }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4" class="text-muted">Item details processed.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('products') }}" class="btn btn-primary-custom rounded-pill px-4 me-2">
+                        <i class="bi bi-bag me-1"></i> Continue Shopping
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-dark rounded-pill px-4">
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        // Clear cart in browser localStorage after successful order completion
+        document.addEventListener('DOMContentLoaded', function() {
+            localStorage.removeItem('eshop_cart');
+            updateCartCounter();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | E-SHOP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-light">
+
+    {% include 'navbar.html' %}
+
+    <main class="py-5">
+        <div class="container">
+            
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('products') }}" class="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                </ol>
+            </nav>
+
+            <div class="row g-4" id="checkout-content">
+                <!-- Left Column: Shipping Address & Payment Form -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+                        <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                            <div class="brand-icon-box" style="width: 42px; height: 42px;">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark">Customer Shipping Details</h4>
+                                <small class="text-muted">Enter the address where your order will be delivered</small>
+                            </div>
+                        </div>
+
+                        {% if error %}
+                            <div class="alert alert-danger py-2 small rounded-3 mb-4">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error }}
+                            </div>
+                        {% endif %}
+
+                        <form action="/checkout" method="POST" id="checkout-form" onsubmit="return validateCheckoutForm()">
+                            <!-- Customer Contact Info -->
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-person me-2 text-primary"></i> Contact Information</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="customer_name" class="form-control" 
+                                           placeholder="e.g. Alexander Hamilton" 
+                                           value="{{ session['user'].get('name', '') if session.get('user') else '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" name="customer_email" class="form-control" 
+                                           placeholder="alexander@example.com" 
+                                           value="{{ session['user'].get('email', '') if session.get('user') else '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                                    <input type="tel" name="customer_phone" class="form-control" 
+                                           placeholder="+1 (555) 019-2834" required>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-truck me-2 text-primary"></i> Delivery Address</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Street Address <span class="text-danger">*</span></label>
+                                    <input type="text" name="address_line1" class="form-control" 
+                                           placeholder="e.g. 742 Evergreen Terrace" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Apartment, Suite, Unit (Optional)</label>
+                                    <input type="text" name="address_line2" class="form-control" 
+                                           placeholder="Apt 4B, Building C">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-semibold">City <span class="text-danger">*</span></label>
+                                    <input type="text" name="city" class="form-control" placeholder="Springfield" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">State / Province <span class="text-danger">*</span></label>
+                                    <input type="text" name="state" class="form-control" placeholder="California" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold">ZIP Code <span class="text-danger">*</span></label>
+                                    <input type="text" name="postal_code" class="form-control" placeholder="90210" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Country</label>
+                                    <select name="country" class="form-select">
+                                        <option value="United States" selected>United States</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="United Kingdom">United Kingdom</option>
+                                        <option value="Australia">Australia</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="India">India</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Payment Method Selection -->
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-credit-card-2-front me-2 text-primary"></i> Payment Method</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-sm-6">
+                                    <div class="form-check p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+                                        <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="pay-cc" value="Credit Card" checked>
+                                        <label class="form-check-label fw-semibold small" for="pay-cc">
+                                            <i class="bi bi-credit-card text-primary me-1"></i> Credit / Debit Card
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+                                        <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="pay-cod" value="Cash on Delivery">
+                                        <label class="form-check-label fw-semibold small" for="pay-cod">
+                                            <i class="bi bi-cash-stack text-success me-1"></i> Cash on Delivery (COD)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+                                        <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="pay-paypal" value="PayPal">
+                                        <label class="form-check-label fw-semibold small" for="pay-paypal">
+                                            <i class="bi bi-paypal text-info me-1"></i> PayPal Express
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+                                        <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="pay-apple" value="Apple Pay">
+                                        <label class="form-check-label fw-semibold small" for="pay-apple">
+                                            <i class="bi bi-apple text-dark me-1"></i> Apple Pay
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Form Payloads for Totals & Items -->
+                            <input type="hidden" name="subtotal" id="hidden-subtotal" value="0">
+                            <input type="hidden" name="shipping" id="hidden-shipping" value="0">
+                            <input type="hidden" name="total" id="hidden-total" value="0">
+                            <input type="hidden" name="items_json" id="hidden-items" value="[]">
+
+                            <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3 fw-bold shadow">
+                                <i class="bi bi-lock-fill me-2"></i> Confirm & Place Order Now
+                            </button>
+                            <small class="text-muted text-center d-block mt-2" style="font-size: 0.78rem;">
+                                🔒 256-Bit Bank Grade SSL Encrypted Checkout &bull; 30-Day Money Back Guarantee
+                            </small>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: Order Summary (Loaded from cart) -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 90px; z-index: 10;">
+                        <h5 class="fw-bold mb-3 text-dark pb-2 border-bottom">Order Summary</h5>
+                        
+                        <!-- Dynamic Cart Items Container -->
+                        <div id="checkout-items-list" class="mb-3 overflow-auto" style="max-height: 280px;">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+
+                        <!-- Promo Code Strip -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-sm text-uppercase" placeholder="Promo code (e.g. SPRING20)" id="promo-input">
+                            <button class="btn btn-outline-dark btn-sm px-3" type="button" onclick="applyPromo()">Apply</button>
+                        </div>
+                        <div id="promo-msg" class="small mb-2 d-none"></div>
+
+                        <!-- Price Breakdown -->
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between text-muted small mb-2">
+                                <span>Subtotal:</span>
+                                <span class="fw-semibold text-dark" id="summary-subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small mb-2">
+                                <span>Shipping:</span>
+                                <span class="fw-semibold" id="summary-shipping">FREE</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-success small mb-2 d-none" id="discount-row">
+                                <span>Promo Discount (20%):</span>
+                                <span class="fw-semibold" id="summary-discount">-$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small mb-3">
+                                <span>Estimated Taxes:</span>
+                                <span class="fw-semibold text-dark">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <h6 class="fw-bold text-dark mb-0">Total Due:</h6>
+                                <h4 class="fw-extrabold text-primary fw-bold mb-0" id="summary-total">$0.00</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Cart Warning Screen -->
+            <div id="checkout-empty-warning" class="text-center py-5 d-none">
+                <div class="card border-0 shadow-sm rounded-4 p-5 mx-auto bg-white" style="max-width: 500px;">
+                    <i class="bi bi-cart-x fs-1 text-muted d-block mb-3"></i>
+                    <h4 class="fw-bold text-dark">Your cart is currently empty</h4>
+                    <p class="text-muted small mb-4">Please add some items to your shopping cart before attempting to checkout.</p>
+                    <a href="{{ url_for('products') }}" class="btn btn-primary-custom rounded-pill px-4">
+                        <i class="bi bi-bag me-1"></i> Browse Catalog
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    {% include 'cart_modal.html' %}
+    {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        let discountMultiplier = 0.0;
+
+        function renderCheckoutSummary() {
+            const cart = getCart();
+            const itemsContainer = document.getElementById('checkout-items-list');
+            const contentDiv = document.getElementById('checkout-content');
+            const emptyDiv = document.getElementById('checkout-empty-warning');
+
+            if (!cart || cart.length === 0) {
+                if (contentDiv) contentDiv.classList.add('d-none');
+                if (emptyDiv) emptyDiv.classList.remove('d-none');
+                return;
+            }
+
+            let subtotal = 0;
+            let html = '';
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                html += `
+                    <div class="d-flex align-items-center gap-3 py-2 border-bottom border-light">
+                        <img src="${item.image}" alt="${item.title}" class="rounded-3 shadow-none border" style="width: 52px; height: 52px; object-fit: cover;">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h6 class="mb-0 text-truncate small fw-bold text-dark">${item.title}</h6>
+                            <small class="text-muted">Qty: ${item.quantity} &times; $${item.price.toFixed(2)}</small>
+                        </div>
+                        <span class="small fw-bold text-dark">$${itemTotal.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            itemsContainer.innerHTML = html;
+
+            // Shipping: Free if subtotal > 50 else $9.99
+            const shipping = (subtotal >= 50.0 || subtotal === 0) ? 0.0 : 9.99;
+            const discount = subtotal * discountMultiplier;
+            const grandTotal = Math.max(0, subtotal - discount + shipping);
+
+            document.getElementById('summary-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('summary-shipping').textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+            
+            if (discount > 0) {
+                document.getElementById('discount-row').classList.remove('d-none');
+                document.getElementById('summary-discount').textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                document.getElementById('discount-row').classList.add('d-none');
+            }
+
+            document.getElementById('summary-total').textContent = `$${grandTotal.toFixed(2)}`;
+
+            // Populate hidden inputs for POST submission
+            document.getElementById('hidden-subtotal').value = subtotal.toFixed(2);
+            document.getElementById('hidden-shipping').value = shipping.toFixed(2);
+            document.getElementById('hidden-total').value = grandTotal.toFixed(2);
+            document.getElementById('hidden-items').value = JSON.stringify(cart);
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promo-input').value.trim().toUpperCase();
+            const msg = document.getElementById('promo-msg');
+            if (code === 'SPRING20') {
+                discountMultiplier = 0.20;
+                msg.className = 'small mb-2 text-success';
+                msg.textContent = '✓ 20% discount code applied successfully!';
+                msg.classList.remove('d-none');
+            } else if (code) {
+                msg.className = 'small mb-2 text-danger';
+                msg.textContent = 'Invalid promotional code.';
+                msg.classList.remove('d-none');
+            }
+            renderCheckoutSummary();
+        }
+
+        function validateCheckoutForm() {
+            const cart = getCart();
+            if (!cart || cart.length === 0) {
+                alert('Your cart is empty!');
+                return false;
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCheckoutSummary);
+    </script>
+</body>
+</html>

@@ -100,11 +100,11 @@
                                         {% if prod.badge %}
                                             <span class="product-badge-float">{{ prod.badge }}</span>
                                         {% endif %}
-                                        <img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img" loading="lazy">
+                                        <a href="{{ url_for('product_detail', product_id=prod.id) }}"><img src="{{ prod.image }}" alt="{{ prod.title }}" class="product-img" loading="lazy"></a>
                                     </div>
                                     <div class="product-body-pro">
                                         <span class="product-category-tag">{{ prod.category_name or 'Collection' }}</span>
-                                        <h5 class="product-title-pro">{{ prod.title }}</h5>
+                                        <h5 class="product-title-pro"><a href="{{ url_for('product_detail', product_id=prod.id) }}" class="text-decoration-none text-dark">{{ prod.title }}</a></h5>
                                         <p class="product-desc-pro">{{ prod.description or 'Engineered with premium materials for maximum durability and satisfaction.' }}</p>
                                         
                                         <!-- Rating -->

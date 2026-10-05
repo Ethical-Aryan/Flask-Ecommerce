@@ -169,14 +169,12 @@ function clearCart() {
 
 function checkoutCart() {
     const cart = getCart();
-    if (cart.length === 0) return;
-    alert('Thank you for your order! Your purchase was successful.');
-    saveCart([]);
-    const modalEl = document.getElementById('cartModal');
-    if (modalEl) {
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
+    if (!cart || cart.length === 0) {
+        alert('Your shopping cart is currently empty! Please add products before checking out.');
+        return;
     }
+    window.location.href = '/checkout';
+}
 }
 
 function showToast(message) {
